@@ -2,6 +2,8 @@
 
 using System.Collections.Generic;
 
+using System.Linq;
+
 
 namespace PatientAppointmentSystem
 
@@ -15,7 +17,7 @@ namespace PatientAppointmentSystem
 
         {
 
-            public int Id { get; set; } // New: Unique ID for deletion
+            public int Id { get; set; }
 
             public string PatientName { get; set; }
 
@@ -30,7 +32,7 @@ namespace PatientAppointmentSystem
 
         static List<Appointment> appointments = new List<Appointment>();
 
-        static int nextId = 1; // Auto-incrementing ID
+        static int nextId = 1;
 
 
         static void Main(string[] args)
@@ -38,6 +40,7 @@ namespace PatientAppointmentSystem
         {
 
             bool running = true;
+
 
             while (running)
 
@@ -53,12 +56,15 @@ namespace PatientAppointmentSystem
 
                 Console.WriteLine("3. Delete Appointment");
 
-                Console.WriteLine("4. Exit");
+                Console.WriteLine("4. Search Appointments by Patient Name");
 
-                Console.Write("Enter your choice: ");
+                Console.WriteLine("5. Exit");
+
+                Console.Write("Enter your choice (1-5): ");
 
 
                 string choice = Console.ReadLine();
+
 
                 switch (choice)
 
@@ -84,9 +90,15 @@ namespace PatientAppointmentSystem
 
                     case "4":
 
+                        SearchByPatientName();
+
+                        break;
+
+                    case "5":
+
                         Console.Write("Are you sure you want to exit? (y/n): ");
 
-                        if (Console.ReadLine().ToLower() == "y")
+                        if (Console.ReadLine().Trim().ToLower() == "y")
 
                             running = false;
 
@@ -94,171 +106,100 @@ namespace PatientAppointmentSystem
 
                     default:
 
-                        Console.WriteLine("Invalid choice. Press any key...");
+                        Console.WriteLine("Invalid choice. Please select 1-5.");
+
+                        Console.WriteLine("Press any key to continue...");
 
                         Console.ReadKey();
 
                         break;
 
+
                 }
 
-            }
 
-
-            Console.WriteLine("Thank you for using the system. Goodbye!");
-
-        }
-
-
-        static void AddAppointment()
-
-        {
-
-            Console.Clear();
-
-            Console.WriteLine("--- Add New Appointment ---");
-
-
-            Console.Write("Patient Name: ");
-
-            string patientName = Console.ReadLine();
-
-
-            Console.Write("Doctor Name: ");
-
-            string doctorName = Console.ReadLine();
-
-
-            Console.Write("Date (YYYY-MM-DD): ");
-
-            DateTime date;
-
-            while (!DateTime.TryParse(Console.ReadLine(), out date))
-
-            {
-
-                Console.Write("Invalid date. Please try again (YYYY-MM-DD): ");
+                Console.WriteLine("\nThank you for using the Patient Appointment System. Goodbye!");
 
             }
 
 
-            Console.Write("Time (e.g., 10:00 AM): ");
-
-            string time = Console.ReadLine();
-
-
-            appointments.Add(new Appointment
+            static void AddAppointment()
 
             {
 
-                Id = nextId++,
+                Console.Clear();
 
-                PatientName = patientName,
-
-                DoctorName = doctorName,
-
-                Date = date,
-
-                Time = time
-
-            });
+                Console.WriteLine("--- Add New Appointment ---");
 
 
-            Console.WriteLine("\nAppointment successfully added!");
+                Console.Write("Patient Name: ");
 
-            Console.WriteLine("Press any key to return to main menu...");
-
-            Console.ReadKey();
-
-        }
+                string patientName = Console.ReadLine().Trim();
 
 
-        static void ViewAppointments()
+                Console.Write("Doctor Name: ");
 
-        {
-
-            Console.Clear();
-
-            Console.WriteLine("--- All Appointments ---");
+                string doctorName = Console.ReadLine().Trim();
 
 
-            if (appointments.Count == 0)
+                Console.Write("Date (YYYY-MM-DD): ");
 
-            {
+                DateTime date;
 
-                Console.WriteLine("No appointments scheduled yet.");
-
-            }
-
-            else
-
-            {
-
-                Console.WriteLine($"{"ID",-4} {"Patient",-20} {"Doctor",-20} {"Date",-12} {"Time",-10}");
-
-                Console.WriteLine(new string('-', 66));
-
-
-                foreach (var a in appointments)
+                while (!DateTime.TryParse(Console.ReadLine(), out date))
 
                 {
 
-                    Console.WriteLine($"{a.Id,-4} {a.PatientName,-20} {a.DoctorName,-20} {a.Date:yyyy-MM-dd,-12} {a.Time,-10}");
+                    Console.Write("Invalid date format. Please try again (YYYY-MM-DD): ");
 
                 }
 
-            }
+
+                Console.Write("Time (e.g., 10:00 AM): ");
+
+                string time = Console.ReadLine().Trim();
 
 
-            Console.WriteLine("\nPress any key to return...");
+                appointments.Add(new Appointment
 
-            Console.ReadKey();
+                {
 
-        }
+                    Id = nextId++,
+
+                    PatientName = patientName,
+
+                    DoctorName = doctorName,
+
+                    Date = date,
+
+                    Time = time
+
+                });
 
 
-        static void DeleteAppointment()
+                Console.WriteLine("\nAppointment successfully added!");
 
-        {
-
-            Console.Clear();
-
-            Console.WriteLine("--- Delete Appointment ---");
-
-
-            if (appointments.Count == 0)
-
-            {
-
-                Console.WriteLine("No appointments to delete.");
-
-                Console.WriteLine("Press any key to return...");
+                Console.WriteLine("Press any key to return to main menu...");
 
                 Console.ReadKey();
 
-                return;
-
             }
 
 
-            ViewAppointments(); // Show list with IDs
-
-
-            Console.Write("\nEnter the ID of the appointment to delete: ");
-
-            if (int.TryParse(Console.ReadLine(), out int id))
+            static void ViewAppointments()
 
             {
 
-                var appt = appointments.Find(a => a.Id == id);
+                Console.Clear();
 
-                if (appt != null)
+                Console.WriteLine("--- All Appointments ---");
+
+
+                if (appointments.Count == 0)
 
                 {
 
-                    appointments.Remove(appt);
-
-                    Console.WriteLine("\nAppointment deleted successfully!");
+                    Console.WriteLine("No appointments scheduled yet.");
 
                 }
 
@@ -266,27 +207,188 @@ namespace PatientAppointmentSystem
 
                 {
 
-                    Console.WriteLine("\nAppointment ID not found.");
+                    Console.WriteLine($"{"ID",-4} {"Patient",-25} {"Doctor",-20} {"Date",-12} {"Time",-10}");
+
+                    Console.WriteLine(new string('-', 71));
+
+
+                    foreach (var a in appointments)
+
+                    {
+
+                        Console.WriteLine($"{a.Id,-4} {a.PatientName,-25} {a.DoctorName,-20} {a.Date:yyyy-MM-dd,-12} {a.Time,-10}");
+
+                    }
 
                 }
 
+
+                Console.WriteLine("\nPress any key to return to main menu...");
+
+                Console.ReadKey();
+
             }
 
-            else
+
+            static void DeleteAppointment()
 
             {
 
-                Console.WriteLine("\nInvalid ID entered.");
+                Console.Clear();
+
+                Console.WriteLine("--- Delete Appointment ---");
+
+
+                if (appointments.Count == 0)
+
+                {
+
+                    Console.WriteLine("No appointments available to delete.");
+
+                    Console.WriteLine("Press any key to return...");
+
+                    Console.ReadKey();
+
+                    return;
+
+                }
+
+
+                ViewAppointments(); // Reuse view to show IDs
+
+
+                Console.Write("\nEnter the ID of the appointment to delete: ");
+
+                if (int.TryParse(Console.ReadLine(), out int id))
+
+                {
+
+                    var appt = appointments.FirstOrDefault(a => a.Id == id);
+
+                    if (appt != null)
+
+                    {
+
+                        appointments.Remove(appt);
+
+                        Console.WriteLine("\nAppointment deleted successfully!");
+
+                    }
+
+                    else
+
+                    {
+
+                        Console.WriteLine("\nNo appointment found with that ID.");
+
+                    }
+
+                }
+
+                else
+
+                {
+
+                    Console.WriteLine("\nInvalid ID entered.");
+
+                }
+
+
+                Console.WriteLine("Press any key to return to main menu...");
+
+                Console.ReadKey();
 
             }
 
 
-            Console.WriteLine("Press any key to return...");
+            static void SearchByPatientName()
 
-            Console.ReadKey();
+            {
+
+                Console.Clear();
+
+                Console.WriteLine("--- Search Appointments by Patient Name ---");
+
+
+                if (appointments.Count == 0)
+
+                {
+
+                    Console.WriteLine("No appointments available to search.");
+
+                    Console.WriteLine("Press any key to return...");
+
+                    Console.ReadKey();
+
+                    return;
+
+                }
+
+
+                Console.Write("Enter patient name (or part of name): ");
+
+                string searchTerm = Console.ReadLine().Trim();
+
+
+                if (string.IsNullOrEmpty(searchTerm))
+
+                {
+
+                    Console.WriteLine("\nSearch term cannot be empty.");
+
+                    Console.WriteLine("Press any key to return...");
+
+                    Console.ReadKey();
+
+                    return;
+
+                }
+
+
+                var matches = appointments
+
+                .Where(a => a.PatientName.ToLower().Contains(searchTerm.ToLower()))
+
+                .ToList();
+
+
+                if (matches.Count == 0)
+
+                {
+
+                    Console.WriteLine($"\nNo appointments found containing '{searchTerm}'.");
+
+                }
+
+                else
+
+                {
+
+                    Console.WriteLine($"\nFound {matches.Count} matching appointment(s):");
+
+                    Console.WriteLine($"{"ID",-4} {"Patient",-25} {"Doctor",-20} {"Date",-12} {"Time",-10}");
+
+                    Console.WriteLine(new string('-', 71));
+
+
+                    foreach (var a in matches)
+
+                    {
+
+                        Console.WriteLine($"{a.Id,-4} {a.PatientName,-25} {a.DoctorName,-20} {a.Date:yyyy-MM-dd,-12} {a.Time,-10}");
+
+                    }
+
+                }
+
+
+                Console.WriteLine("\nPress any key to return to main menu...");
+
+                Console.ReadKey();
+
+            }
 
         }
 
     }
-
 }
